@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_fragment1"
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_camera_alt"
+        android:title="카메라" />
+
+    <item
+        android:id="@+id/item_fragment2"
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_featured_play_list"
+        android:title="게시판" />
+
+    <item
+        android:id="@+id/item_fragment3"
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_home_filled"
+        android:title="홈" />
+
+    <item
+        android:id="@+id/item_fragment4"
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_map"
+        android:title="지도" />
+
+    <item
+        android:id="@+id/item_fragment5"
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_person"
+        android:title="채팅" />
+
+</menu>
