@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "207224749118",
+    "project_id": "makeit-1661753559434",
+    "storage_bucket": "makeit-1661753559434.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207224749118:android:f7aa57cb6c8750e245a56f",
+        "android_client_info": {
+          "package_name": "com.example.makeit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207224749118-logeqhbo1oo4ec24c8c9bvc7itu064l7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.makeit",
+            "certificate_hash": "2bf7e5fa7ae878b57b60e2c580ece457c601a0e9"
+          }
+        },
+        {
+          "client_id": "207224749118-c8i188iu14151akl4pvvcbtvjhum43nv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPFvBxBXVHs3AoXAi5e-LcDflC_dWL12E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207224749118-c8i188iu14151akl4pvvcbtvjhum43nv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

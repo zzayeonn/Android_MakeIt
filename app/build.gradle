@@ -1,5 +1,8 @@
 plugins {
     id 'com.android.application'
+
+    //파이어 베이스
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -29,11 +32,21 @@ android {
 
 dependencies {
 
-    //추가한 것
+    //메인액티비티 하단 네비게이션
     implementation 'androidx.navigation:navigation-fragment:2.3.2'
     implementation 'androidx.navigation:navigation-ui:2.3.2'
 
-    //기존에 있던 것
+    //구글 로그인
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
+
+    //파이어베이스 (구글 로그인 때)
+    implementation platform('com.google.firebase:firebase-bom:30.3.2')
+    implementation 'com.google.firebase:firebase-analytics' //파이어베이스 앱 분석
+    implementation 'com.google.firebase:firebase-core:21.1.0' //파이어베이스 코어
+    implementation 'com.google.firebase:firebase-auth:21.0.7' //파이어베이스 인증
+    //implementation 'com.firebaseui:firebase-ui-auth:4.2.1' //파이어베이스 인증2
+
+    //기존
     implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

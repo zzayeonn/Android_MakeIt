@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         //처음화면
         getSupportFragmentManager().beginTransaction().add(R.id.frame_main, new HomeFragment()).commit(); //FrameLayout에 fragment.xml 띄우기
+        bottomNavigationView.setSelectedItemId(R.id.item_fragment3);
 
         //바텀 네비게이션뷰 안의 아이템 설정
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -52,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
+
+
     }
 
 }
