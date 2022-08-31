@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class RegistActivity extends AppCompatActivity {
 
+
+    //홈 화면 접근을 위한 임시 로그인 방법(삭제 예정)----------------------------------------------------------------------------------
     int version = 1;
     DatabaseOpenHelper helper;
     SQLiteDatabase database;
@@ -23,15 +25,20 @@ public class RegistActivity extends AppCompatActivity {
 
     String sql;
     Cursor cursor;
+    //--------------------------------------------------------------------------------------------------------------------------
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
+        //액션바 숨기기
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
+
+        //홈 화면 접근을 위한 임시 로그인 방법(삭제 예정)------------------------------------------------------------------------------
         idEditText = findViewById(R.id.et_nameregist);
         pwEditText = findViewById(R.id.et_pwregist);
 
@@ -82,5 +89,8 @@ public class RegistActivity extends AppCompatActivity {
                 finish(); //현재 액티비티 종료
             }
         });
+        //----------------------------------------------------------------------------------------------------------------------
+
+
     }
 }
