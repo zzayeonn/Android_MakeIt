@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.makeit"
-        minSdk 24
+        minSdk 21 //24
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -32,9 +32,10 @@ android {
 
 dependencies {
     //카카오 로그인
-    implementation "com.kakao.sdk:v2-user:2.11.0" //카카오 로그인
-    implementation "com.kakao.sdk:v2-talk:2.11.0" //친구, 메시지(카카오톡)
-    implementation "com.kakao.sdk:v2-share:2.11.0" //메시지(카카오톡 공유)
+    //implementation "com.kakao.sdk:v2-all:2.11.0" // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation "com.kakao.sdk:v2-user:2.6.0" //카카오 로그인
+    //implementation "com.kakao.sdk:v2-talk:2.6.0" //친구, 메시지(카카오톡)
+    //implementation "com.kakao.sdk:v2-share:2..0" //메시지(카카오톡 공유)
 
     //메인액티비티 하단 네비게이션
     implementation 'androidx.navigation:navigation-fragment:2.3.2'

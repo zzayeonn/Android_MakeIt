@@ -18,13 +18,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //액션바 숨기기
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
         bottomNavigationView = findViewById(R.id.nav_main);
 
         //처음화면
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_main, new HomeFragment()).commit(); //FrameLayout에 fragment.xml 띄우기
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_main, new HomeFragment()).commit();
         bottomNavigationView.setSelectedItemId(R.id.item_fragment3);
 
         //바텀 네비게이션뷰 안의 아이템 설정
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    //item을 클릭시 id값을 가져와 FrameLayout에 fragment.xml띄우기
                     case R.id.item_fragment1:
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_main, new CameraFragment()).commit();
                         break;
@@ -52,10 +52,5 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
-
-
     }
-
 }

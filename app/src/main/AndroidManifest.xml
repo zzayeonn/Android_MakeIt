@@ -17,9 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MakeIt"
         tools:targetApi="31">
-        <meta-data
-            android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_app_key" />
 
         <!--LoginActivity가 맨 첫 페이지로 등장-->
         <activity android:name=".LoginActivity"
@@ -30,16 +27,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Intent URL 에서 로그인 액티비티를 실행하기 위해 설정-->
-                <data
-                    android:scheme="naver3rdpartylogin"
-                    android:host="authorize"
-                    android:path="/"/>
-            </intent-filter>
         </activity>
 
         <activity android:name=".RegistActivity">
@@ -47,6 +34,21 @@
 
         <activity android:name=".MainActivity">
         </activity>
+
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <data android:host="oauth"
+                    android:scheme="kakao74281fcaf4a42a1b48ea418bc7d2fba5" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

@@ -1,12 +1,10 @@
 package com.example.makeit;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-
+//구글 로그인 import
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -33,16 +31,13 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.kakao.sdk.auth.model.OAuthToken;
-import com.kakao.sdk.user.UserApiClient;
-import com.kakao.sdk.user.model.User;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
+//카카오 로그인 import
+import com.kakao.sdk.user.UserApiClient;
 
 
 public class LoginActivity extends AppCompatActivity {
-    //구글 로그인-----------------------------------------------------------------------------------------------------------------
+    //구글 로그인 초기화-----------------------------------------------------------------------------------------------------------
     private SignInButton btn_google; //구글 로그인 버튼
     private FirebaseAuth auth; //파이어베이스 인증 객체
     private GoogleSignInClient googleSignInClient; //구글 API 클라이언트 객체
@@ -50,18 +45,9 @@ public class LoginActivity extends AppCompatActivity {
     private final static String TAG_G = "google";
     //--------------------------------------------------------------------------------------------------------------------------
 
-    //카카오 로그인---------------------------------------------------------------------------------------------------------------
+    //카카오 로그인 초기화---------------------------------------------------------------------------------------------------------
     private ImageButton btn_kakao;
-    public static Context mContext;
-    private SharedPreferences sharedPreferences;
-    private User currentUser;
-    private String userImageString = "";
-    private Bitmap mBitmap;
-    SharedPreferences.Editor editor;
-    private Boolean isTrue = false;
-    private Boolean nextIntent = false;
-    private String meetingId;
-    private Intent intent;
+    String token;
     private final static String TAG_K = "kakao";
     //--------------------------------------------------------------------------------------------------------------------------
 
@@ -94,11 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-        //카카오 해시키 값 구하기 (import com.kakao.sdk.common.util.Utility; 필요)
-        /*String keyHash = Utility.INSTANCE.getKeyHash(this);
-        Log.e(TAG_K, keyHash);*/
-
-        //구글 로그인-------------------------------------------------------------------------------------------------------------
+        //구글 로그인 onCreate----------------------------------------------------------------------------------------------------
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -120,46 +102,32 @@ public class LoginActivity extends AppCompatActivity {
         btn_google.setOnClickListener(new View.OnClickListener() { //구글 로그인 버튼 클릭
             @Override
             public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.btn_google:
-                        signIn();
-                        break;
-                }
+                signIn();
             }
         });
         //----------------------------------------------------------------------------------------------------------------------
 
-        //카카오 로그인-----------------------------------------------------------------------------------------------------------
-        Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
-            @Override
-            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
-                if (oAuthToken != null) {
-                    Log.i("user", oAuthToken.getAccessToken() + " " + oAuthToken.getRefreshToken());
-                }
-                if (throwable != null) {
-                    Log.w(TAG_K, "invoke: " + throwable.getLocalizedMessage());
-                }
-                updateKakaoLoginUi();
-
-                return null;
-            }
-        };
+        //카카오 로그인 onCreate--------------------------------------------------------------------------------------------------
+        //카카오 해시키 값 구하기 (import com.kakao.sdk.common.util.Utility; 필요)
+        /*String keyHash = Utility.INSTANCE.getKeyHash(this);
+        Log.e(TAG_K, keyHash);*/
 
         btn_kakao = findViewById(R.id.btn_kakao);
-        btn_kakao.setOnClickListener(new View.OnClickListener() {   //카카오 로그인 버튼 클릭
+        btn_kakao.setOnClickListener(new View.OnClickListener() { //카카오 로그인 버튼 클릭
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this,"카카오 버튼 클릭",Toast.LENGTH_SHORT).show();
-
-                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(LoginActivity.this)) {
-                    //카카오톡이 있을 경우
-                    UserApiClient.getInstance().loginWithKakaoTalk(LoginActivity.this, callback);
-                } else {
-                    UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this, callback);
+                Log.d(TAG_K, "카카오 로그인 버튼 클릭");
+                if(UserApiClient.getInstance().isKakaoTalkLoginAvailable(LoginActivity.this)){
+                    login();
+                    Log.d(TAG_K, "카카오톡 앱으로 로그인 시작");
                 }
+                else {
+                    accountLogin();
+                    Log.d(TAG_K, "카카오톡 웹으로 로그인 시작");
+                }
+                Log.d(TAG_K, "카카오 로그인에서 다음으로 진행");
             }
         });
-        updateKakaoLoginUi();
         //----------------------------------------------------------------------------------------------------------------------
 
 
@@ -230,7 +198,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    //구글 로그인-----------------------------------------------------------------------------------------------------------------
+    //구글 로그인 함수-------------------------------------------------------------------------------------------------------------
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -239,20 +207,18 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //구글로그인 인텐트에서 생성된 결과값이 리턴됨
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-
+        //signInIntent에서 생성된 결과값이 리턴됨
         if (requestCode == RC_SIGN_IN) { //requestCode를 받은 경우
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                // Google Sign In was successful, authenticate with Firebase
+                //구글 로그인이 성공한 경우, 파이어베이스로 토큰 인증
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG_G, "firebaseAuthWithGoogle:" + account.getId());
-                //GoogleSignInAccount 객체에서 ID 토큰을 가져와서 firebaseAuthWithGoogle함수로 전달
+                Log.d(TAG_G, "토큰 정보 : " + account.getId());
+                //GoogleSignInAccount 객체에서 ID 토큰을 가져와서 firebaseAuthWithGoogle 함수로 전달
                 firebaseAuthWithGoogle(account.getIdToken(), account);
             } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG_G, "Google sign in failed", e);
+                //구글 로그인이 실패한 경우, UI를 즉시 업데이트
+                Log.d(TAG_G, "구글 로그인 실패(토큰 미전달)");
             }
         }
     }
@@ -264,46 +230,64 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success
-                            Toast.makeText(LoginActivity.this,"구글 로그인 성공",Toast.LENGTH_SHORT).show();
+                            //구글 로그인에 성공했을 경우
+                            //Toast.makeText(LoginActivity.this,"구글 로그인 성공",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                            intent.putExtra("UserName", account.getDisplayName());
-                            intent.putExtra("UserEmail", account.getEmail());
+                            intent.putExtra("사용자 이름 : ", account.getDisplayName());
+                            intent.putExtra("사용자 이메일 : ", account.getEmail());
                             Log.d(TAG_G, account.getDisplayName());
                             Log.d(TAG_G, account.getEmail());
                             startActivity(intent);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginActivity.this,"구글 로그인 실패",Toast.LENGTH_SHORT).show();
+                            //구글 로그인에 실패했을 경우
+                            Log.d(TAG_G, "구글 로그인 실패(토큰 정보 업데이트 완료)");
+                            //Toast.makeText(LoginActivity.this,"구글 로그인 실패",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
     //--------------------------------------------------------------------------------------------------------------------------
 
-    //카카오 로그인---------------------------------------------------------------------------------------------------------------
-    private void updateKakaoLoginUi() {
-        // 카카오 UI 가져오는 메소드 (로그인 핵심 기능)
-        UserApiClient.getInstance().me(new Function2<User, Throwable, Unit>() {
-            @Override
-            public Unit invoke(User user, Throwable throwable) {
-                if (user != null) {
-                    // 유저 정보가 정상 전달 되었을 경우
-                    Log.i(TAG_K, "id " + user.getId());   // 유저의 고유 아이디를 불러옵니다.
-                    Log.i(TAG_K, "invoke: nickname=" + user.getKakaoAccount().getProfile().getNickname());  // 유저의 닉네임을 불러옵니다.
-                    Log.i(TAG_K, "userimage " + user.getKakaoAccount().getProfile().getProfileImageUrl());    // 유저의 이미지 URL을 불러옵니다.
-
-                    // 이 부분에는 로그인이 정상적으로 되었을 경우 어떤 일을 수행할 지 적으면 됩니다.
-                }
-                if (throwable != null) {
-                    // 로그인 시 오류 났을 때
-                    // 키해시가 등록 안 되어 있으면 오류 납니다.
-                    Log.w(TAG_K, "invoke: " + throwable.getLocalizedMessage());
-                }
-                return null;
+    //카카오 로그인 함수-----------------------------------------------------------------------------------------------------------
+    public void login(){ //카카오톡 앱이 설치된 경우
+        UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this,(oAuthToken, error) -> {
+            if(error != null){
+                Log.e(TAG_K, "앱 로그인 실패", error);
             }
+            else if(oAuthToken != null){
+                Log.i(TAG_K, "앱 로그인 성공(토큰): " + oAuthToken.getAccessToken());
+                token = oAuthToken.getAccessToken();
+                getUserInfo();
+            }
+            return null;
+        });
+    }
+    public void accountLogin(){ //카카오톡 앱 미설치된 경우
+        UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this,(oAuthToken, error) -> {
+            if(error != null){
+                Log.e(TAG_K, "웹 로그인 실패", error);
+            }
+            else if(oAuthToken != null){
+                Log.i(TAG_K, "웹 로그인 성공(토큰): " + oAuthToken.getAccessToken());
+                token = oAuthToken.getAccessToken();
+                getUserInfo();
+            }
+            return null;
+        });
+    }
+    public void getUserInfo(){
+        UserApiClient.getInstance().me((user, meError)->{
+            if(meError != null){
+                Log.e(TAG_K, "사용자 정보 요청 실패", meError);
+            }
+            else{
+                Log.d(TAG_K, "사용자 정보 요청 후 로그인 완료");
+                Log.d(TAG_K, "사용자 정보 : " +user.getId());
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+            return null;
         });
     }
     //--------------------------------------------------------------------------------------------------------------------------
-
 }
