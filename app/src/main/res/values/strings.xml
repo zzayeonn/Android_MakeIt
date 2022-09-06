@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">MakeIt!</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- 카카오 로그인 -->
     <string name="kakao_app_key">74281fcaf4a42a1b48ea418bc7d2fba5</string>
+    <!-- 네이버 로그인 -->
+    <string name="naver_client_id">pJ1ihiK33cZg9rApa5Vu</string>
+    <string name="naver_client_secret">kd3of5ii2l</string>
+    <string name="naver_client_name">MakeIt</string>
 </resources>

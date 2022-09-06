@@ -35,6 +35,14 @@ import com.google.firebase.auth.GoogleAuthProvider;
 //카카오 로그인 import
 import com.kakao.sdk.user.UserApiClient;
 
+//네이버 로그인 import
+import com.navercorp.nid.NaverIdLoginSDK;
+import com.navercorp.nid.oauth.NidOAuthLogin;
+import com.navercorp.nid.oauth.OAuthLoginCallback;
+import com.navercorp.nid.oauth.view.NidOAuthLoginButton;
+import com.navercorp.nid.profile.NidProfileCallback;
+import com.navercorp.nid.profile.data.NidProfileResponse;
+
 
 public class LoginActivity extends AppCompatActivity {
     //구글 로그인 초기화-----------------------------------------------------------------------------------------------------------
@@ -50,6 +58,12 @@ public class LoginActivity extends AppCompatActivity {
     String token;
     private final static String TAG_K = "kakao";
     //--------------------------------------------------------------------------------------------------------------------------
+
+    //네이버 로그인 초기화---------------------------------------------------------------------------------------------------------
+    NidOAuthLoginButton btn_naver;
+    private final static String TAG_N = "naver";
+    //--------------------------------------------------------------------------------------------------------------------------
+
 
 
     //홈 화면 접근을 위한 임시 로그인 방법(삭제 예정)----------------------------------------------------------------------------------
@@ -126,6 +140,34 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG_K, "카카오톡 웹으로 로그인 시작");
                 }
                 Log.d(TAG_K, "카카오 로그인에서 다음으로 진행");
+            }
+        });
+        //----------------------------------------------------------------------------------------------------------------------
+
+        //네이버 로그인 onCreate--------------------------------------------------------------------------------------------------
+        //네이버 아이디로 객체 초기화
+        NaverIdLoginSDK.INSTANCE.initialize(this, getString(R.string.naver_client_id) , getString(R.string.naver_client_secret), getString(R.string.app_name));
+
+        btn_naver = findViewById(R.id.btn_naver);
+        btn_naver.setOAuthLoginCallback(new OAuthLoginCallback() { //카카오 로그인 버튼 클릭
+            @Override
+            public void onSuccess() {
+                Log.d(TAG_K, "네이버 로그인 버튼 클릭");
+                Log.d(TAG_N, "토큰 정보 : " + NaverIdLoginSDK.INSTANCE.getAccessToken());
+                naver_profile();
+                Log.d(TAG_K, "네이버 로그인에서 다음으로 진행");
+            }
+
+            @Override
+            public void onFailure(int i, @NonNull String s) {
+                Log.d(TAG_K, "네이버 로그인 버튼 클릭");
+                Log.d(TAG_N, "네이버 로그인 실패" + s);
+            }
+
+            @Override
+            public void onError(int i, @NonNull String s) {
+                Log.d(TAG_K, "네이버 로그인 버튼 클릭");
+                Log.d(TAG_N, "네이버 로그인 에러" + s);
             }
         });
         //----------------------------------------------------------------------------------------------------------------------
@@ -235,8 +277,8 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                             intent.putExtra("사용자 이름 : ", account.getDisplayName());
                             intent.putExtra("사용자 이메일 : ", account.getEmail());
-                            Log.d(TAG_G, account.getDisplayName());
-                            Log.d(TAG_G, account.getEmail());
+                            Log.d(TAG_G, "사용자 이름 : " + account.getDisplayName());
+                            Log.d(TAG_G, "사용자 이메일 : " + account.getEmail());
                             startActivity(intent);
                         } else {
                             //구글 로그인에 실패했을 경우
@@ -290,4 +332,35 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     //--------------------------------------------------------------------------------------------------------------------------
+
+    //네이버 로그인 함수-----------------------------------------------------------------------------------------------------------
+    private void naver_profile() {
+        NidOAuthLogin authLogin = new NidOAuthLogin();
+        authLogin.callProfileApi(new NidProfileCallback<NidProfileResponse>() {
+            @Override
+            public void onSuccess(NidProfileResponse res) {
+                Log.d(TAG_N,"사용자 정보 업데이트 후 네이버 로그인 완료");
+                Log.d(TAG_N, "사용자 이름 : " + res.getProfile().getName());
+                Log.d(TAG_N, "사용자 이메일 : " + res.getProfile().getEmail());
+
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                intent.putExtra("사용자 이름 : ", res.getProfile().getName());
+                intent.putExtra("사용자 이메일 : ", res.getProfile().getEmail());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(int i, @NonNull String s) {
+                Log.d(TAG_N, "onFailure: " + s);
+            }
+
+            @Override
+            public void onError(int i, @NonNull String s) {
+                Log.d(TAG_N, "onError: "  + s);
+            }
+        });
+    }
+    //--------------------------------------------------------------------------------------------------------------------------
+
+
 }

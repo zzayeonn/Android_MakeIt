@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.makeit">
 
-    <!-- 인터넷 사용 권한 설정-->
+    <!-- 인터넷 사용 권한 설정 (카카오,네이버) -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 인터넷 사용 권한 설정 (네이버 신규 추가) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".GlobalApplication"
