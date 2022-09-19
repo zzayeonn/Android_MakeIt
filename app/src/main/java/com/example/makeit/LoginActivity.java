@@ -1,24 +1,23 @@
 package com.example.makeit;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-//구글 로그인 import
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -31,17 +30,17 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
-
-//카카오 로그인 import
 import com.kakao.sdk.user.UserApiClient;
-
-//네이버 로그인 import
 import com.navercorp.nid.NaverIdLoginSDK;
 import com.navercorp.nid.oauth.NidOAuthLogin;
 import com.navercorp.nid.oauth.OAuthLoginCallback;
 import com.navercorp.nid.oauth.view.NidOAuthLoginButton;
 import com.navercorp.nid.profile.NidProfileCallback;
 import com.navercorp.nid.profile.data.NidProfileResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -64,26 +63,11 @@ public class LoginActivity extends AppCompatActivity {
     private final static String TAG_N = "naver";
     //--------------------------------------------------------------------------------------------------------------------------
 
-
-
-    //홈 화면 접근을 위한 임시 로그인 방법(삭제 예정)----------------------------------------------------------------------------------
-    int version = 1;
-    DatabaseOpenHelper helper;
-    SQLiteDatabase database;
-
-    EditText idEditText, pwEditText;
-    Button btnLogin, btnJoin;
-
-    String sql;
-    Cursor cursor;
-
-    SharedPreferences pref; // 프리퍼런스
-    //SharedPreferences.Editor editor; // 에디터
-    TextView tv_name_pre, tv_date_pre;
-    String name_pre; // 이전 이름
-    String date_pre; // 이전 시간
+    //MySQL DB 사용-------------------------------------------------------------------------------------------------------------
+    EditText et_id, et_password;
+    Button btn_login, btn_regist;
+    private AlertDialog dialog;
     //--------------------------------------------------------------------------------------------------------------------------
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,8 +132,9 @@ public class LoginActivity extends AppCompatActivity {
         //네이버 아이디로 객체 초기화
         NaverIdLoginSDK.INSTANCE.initialize(this, getString(R.string.naver_client_id) , getString(R.string.naver_client_secret), getString(R.string.app_name));
 
+
         btn_naver = findViewById(R.id.btn_naver);
-        btn_naver.setOAuthLoginCallback(new OAuthLoginCallback() { //카카오 로그인 버튼 클릭
+        btn_naver.setOAuthLoginCallback(new OAuthLoginCallback() { //네이버 로그인 버튼 클릭
             @Override
             public void onSuccess() {
                 Log.d(TAG_K, "네이버 로그인 버튼 클릭");
@@ -172,61 +157,78 @@ public class LoginActivity extends AppCompatActivity {
         });
         //----------------------------------------------------------------------------------------------------------------------
 
+        //MySQL DB 사용----------------------------------------------------------------------------------------------------------
+        et_id = findViewById(R.id.et_id);
+        et_password = findViewById(R.id.et_password);
 
-        //홈 화면 접근을 위한 임시 로그인 방법(삭제 예정)------------------------------------------------------------------------------
-        idEditText = findViewById(R.id.et_name);
-        pwEditText = findViewById(R.id.et_password);
+        btn_login = findViewById(R.id.btn_login);
+        btn_regist = findViewById(R.id.btn_regist);
 
-        btnLogin = findViewById(R.id.btn_login);
-        btnJoin = findViewById(R.id.btn_regist);
-
-        helper = new DatabaseOpenHelper(LoginActivity.this, DatabaseOpenHelper.tableName, null, version);
-        database = helper.getWritableDatabase();
-
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = idEditText.getText().toString();
-                String pw = pwEditText.getText().toString();
+                //EditText에 현재 입력되어있는 값을 가져오기
+                String userID = et_id.getText().toString();
+                String userPW = et_password.getText().toString();
 
-                if (id.length() == 0 || pw.length() == 0) {
-                    //정보 미입력
-                    Toast toast = Toast.makeText(LoginActivity.this, "이름과 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT);
-                    toast.show();
-                    return;
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            Response.Listener<String> responseListener = new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        //Log.d("login", "로그인 진입");
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        //Log.d("login", "DB 접근");
+                                        boolean success = jsonObject.getBoolean("success");
+                                        //Log.d("login", "DB 로그인 허가");
+                                        if (success) { //로그인 성공
+                                            String userID = jsonObject.getString("userID");
+                                            String userPW = jsonObject.getString("userPW");
+
+                                            Log.d("login", userID);
+                                            Log.d("login", userPW);
+
+                                            Toast.makeText(getApplicationContext(),"로그인하였습니다.",Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                            intent.putExtra("login", userID);
+                                            intent.putExtra("login", userPW);
+                                            startActivity(intent);
+                                        } else { //로그인 실패
+                                            AlertDialog.Builder builder=new AlertDialog.Builder( LoginActivity.this );
+                                            dialog=builder.setMessage("아이디와 비밀번호를 다시 입력해주세요.")
+                                                    .setPositiveButton("확인",null)
+                                                    .create();
+                                            dialog.show();
+                                            return;
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            };
+                            LoginRequest loginRequest = new LoginRequest(userID, userPW, responseListener);
+                            RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+                            queue.add(loginRequest);
+                        }
+                        catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }
+                });
+                thread.start();
+                try{
+                    thread.join();
                 }
-
-                sql = "SELECT id FROM " + helper.tableName + " WHERE id = '" + id + "'";
-                cursor = database.rawQuery(sql, null);
-
-                if (cursor.getCount() != 1) {
-                    //이름 오류
-                    Toast toast = Toast.makeText(LoginActivity.this, "존재하지 않는 이름입니다.", Toast.LENGTH_SHORT);
-                    toast.show();
-                    return;
+                catch (Exception e){
+                    System.out.println(e);
                 }
-
-                sql = "SELECT pw FROM " + helper.tableName + " WHERE id = '" + id + "'";
-                cursor = database.rawQuery(sql, null);
-
-                cursor.moveToNext();
-                if (!pw.equals(cursor.getString(0))) {
-                    //비밀번호 오류
-                    Toast toast = Toast.makeText(LoginActivity.this, "이름이나 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    //로그인 성공, 인텐트 생성 및 호출
-                    Toast toast = Toast.makeText(LoginActivity.this, id + "님이 로그인 하셨습니다.", Toast.LENGTH_SHORT);
-                    toast.show();
-                    Intent intent_login = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent_login);
-                    finish();
-                }
-                cursor.close();
             }
         });
 
-        btnJoin.setOnClickListener(new View.OnClickListener() {
+        btn_regist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //회원가입 버튼 클릭
@@ -236,8 +238,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         //----------------------------------------------------------------------------------------------------------------------
-
-
     }
 
     //구글 로그인 함수-------------------------------------------------------------------------------------------------------------
@@ -325,6 +325,7 @@ public class LoginActivity extends AppCompatActivity {
             else{
                 Log.d(TAG_K, "사용자 정보 요청 후 로그인 완료");
                 Log.d(TAG_K, "사용자 정보 : " +user.getId());
+                Log.d(TAG_K, "사용자 이메일 : " +user.getKakaoAccount().getEmail());
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }

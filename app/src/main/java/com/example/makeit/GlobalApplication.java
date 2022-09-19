@@ -15,7 +15,7 @@ public class GlobalApplication extends Application {
         instance = this;
 
         //카카오 네이티브 앱 키로 초기화
+        KakaoSdk.init(this, getString(R.string.kakao_app_key));
         Log.d("kakao", "카카오 네이티브앱키 초기화 완료");
-        KakaoSdk.init(this, "74281fcaf4a42a1b48ea418bc7d2fba5");
     }
 }

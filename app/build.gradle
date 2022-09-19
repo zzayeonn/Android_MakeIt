@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "com.example.makeit"
         minSdk 21 //24
-        targetSdk 32
+        targetSdk 27
         versionCode 1
         versionName "1.0"
 
@@ -62,4 +62,7 @@ dependencies {
     //네이버 로그인
     //implementation 'com.navercorp.nid:oauth:5.1.1' // jdk 11
     implementation 'com.navercorp.nid:oauth-jdk8:5.1.1' // jdk 8
+
+    //MysQL DB 연결
+    implementation 'com.android.volley:volley:1.2.1'
 }
