@@ -114,16 +114,16 @@ public class LoginActivity extends AppCompatActivity {
         btn_kakao.setOnClickListener(new View.OnClickListener() { //카카오 로그인 버튼 클릭
             @Override
             public void onClick(View v) {
-                Log.d(TAG_K, "카카오 로그인 버튼 클릭");
+                //Log.d(TAG_K, "카카오 로그인 버튼 클릭");
                 if(UserApiClient.getInstance().isKakaoTalkLoginAvailable(LoginActivity.this)){
                     login();
-                    Log.d(TAG_K, "카카오톡 앱으로 로그인 시작");
+                    //Log.d(TAG_K, "카카오톡 앱으로 로그인 시작");
                 }
                 else {
                     accountLogin();
-                    Log.d(TAG_K, "카카오톡 웹으로 로그인 시작");
+                    //Log.d(TAG_K, "카카오톡 웹으로 로그인 시작");
                 }
-                Log.d(TAG_K, "카카오 로그인에서 다음으로 진행");
+                //Log.d(TAG_K, "카카오 로그인에서 다음으로 진행");
             }
         });
         //----------------------------------------------------------------------------------------------------------------------
@@ -137,22 +137,22 @@ public class LoginActivity extends AppCompatActivity {
         btn_naver.setOAuthLoginCallback(new OAuthLoginCallback() { //네이버 로그인 버튼 클릭
             @Override
             public void onSuccess() {
-                Log.d(TAG_K, "네이버 로그인 버튼 클릭");
-                Log.d(TAG_N, "토큰 정보 : " + NaverIdLoginSDK.INSTANCE.getAccessToken());
+                //Log.d(TAG_N, "네이버 로그인 버튼 클릭");
+                //Log.d(TAG_N, "토큰 정보 : " + NaverIdLoginSDK.INSTANCE.getAccessToken());
                 naver_profile();
-                Log.d(TAG_K, "네이버 로그인에서 다음으로 진행");
+                //Log.d(TAG_N, "네이버 로그인에서 다음으로 진행");
             }
 
             @Override
             public void onFailure(int i, @NonNull String s) {
-                Log.d(TAG_K, "네이버 로그인 버튼 클릭");
-                Log.d(TAG_N, "네이버 로그인 실패" + s);
+                //Log.d(TAG_N, "네이버 로그인 버튼 클릭");
+                //Log.d(TAG_N, "네이버 로그인 실패" + s);
             }
 
             @Override
             public void onError(int i, @NonNull String s) {
-                Log.d(TAG_K, "네이버 로그인 버튼 클릭");
-                Log.d(TAG_N, "네이버 로그인 에러" + s);
+                //Log.d(TAG_N, "네이버 로그인 버튼 클릭");
+                //Log.d(TAG_N, "네이버 로그인 에러" + s);
             }
         });
         //----------------------------------------------------------------------------------------------------------------------
@@ -255,12 +255,12 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 //구글 로그인이 성공한 경우, 파이어베이스로 토큰 인증
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG_G, "토큰 정보 : " + account.getId());
+                //Log.d(TAG_G, "토큰 정보 : " + account.getId());
                 //GoogleSignInAccount 객체에서 ID 토큰을 가져와서 firebaseAuthWithGoogle 함수로 전달
                 firebaseAuthWithGoogle(account.getIdToken(), account);
             } catch (ApiException e) {
                 //구글 로그인이 실패한 경우, UI를 즉시 업데이트
-                Log.d(TAG_G, "구글 로그인 실패(토큰 미전달)");
+                //Log.d(TAG_G, "구글 로그인 실패(토큰 미전달)");
             }
         }
     }
@@ -294,10 +294,10 @@ public class LoginActivity extends AppCompatActivity {
     public void login(){ //카카오톡 앱이 설치된 경우
         UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this,(oAuthToken, error) -> {
             if(error != null){
-                Log.e(TAG_K, "앱 로그인 실패", error);
+                //Log.e(TAG_K, "앱 로그인 실패", error);
             }
             else if(oAuthToken != null){
-                Log.i(TAG_K, "앱 로그인 성공(토큰): " + oAuthToken.getAccessToken());
+                //Log.d(TAG_K, "앱 로그인 성공(토큰): " + oAuthToken.getAccessToken());
                 token = oAuthToken.getAccessToken();
                 getUserInfo();
             }
@@ -307,10 +307,10 @@ public class LoginActivity extends AppCompatActivity {
     public void accountLogin(){ //카카오톡 앱 미설치된 경우
         UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this,(oAuthToken, error) -> {
             if(error != null){
-                Log.e(TAG_K, "웹 로그인 실패", error);
+                //Log.e(TAG_K, "웹 로그인 실패", error);
             }
             else if(oAuthToken != null){
-                Log.i(TAG_K, "웹 로그인 성공(토큰): " + oAuthToken.getAccessToken());
+                //Log.d(TAG_K, "웹 로그인 성공(토큰): " + oAuthToken.getAccessToken());
                 token = oAuthToken.getAccessToken();
                 getUserInfo();
             }
@@ -320,10 +320,10 @@ public class LoginActivity extends AppCompatActivity {
     public void getUserInfo(){
         UserApiClient.getInstance().me((user, meError)->{
             if(meError != null){
-                Log.e(TAG_K, "사용자 정보 요청 실패", meError);
+                //Log.e(TAG_K, "사용자 정보 요청 실패", meError);
             }
             else{
-                Log.d(TAG_K, "사용자 정보 요청 후 로그인 완료");
+                //Log.d(TAG_K, "사용자 정보 요청 후 로그인 완료");
                 Log.d(TAG_K, "사용자 정보 : " +user.getId());
                 Log.d(TAG_K, "사용자 이메일 : " +user.getKakaoAccount().getEmail());
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -340,7 +340,7 @@ public class LoginActivity extends AppCompatActivity {
         authLogin.callProfileApi(new NidProfileCallback<NidProfileResponse>() {
             @Override
             public void onSuccess(NidProfileResponse res) {
-                Log.d(TAG_N,"사용자 정보 업데이트 후 네이버 로그인 완료");
+                //Log.d(TAG_N,"사용자 정보 업데이트 후 네이버 로그인 완료");
                 Log.d(TAG_N, "사용자 이름 : " + res.getProfile().getName());
                 Log.d(TAG_N, "사용자 이메일 : " + res.getProfile().getEmail());
 

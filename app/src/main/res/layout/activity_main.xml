@@ -24,6 +24,14 @@
             app:menu="@menu/navigate_bottom"
             tools:ignore="MissingConstraints" />
 
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로그아웃"
+            android:background="#00ff0000"
+            android:layout_marginLeft="330dp"/>
+
     </FrameLayout>
 
 </LinearLayout>

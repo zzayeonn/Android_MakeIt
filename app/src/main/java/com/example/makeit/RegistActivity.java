@@ -54,11 +54,11 @@ public class RegistActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String userID=et_idregist.getText().toString();
-                if(overlap)
+                if(overlap) //아이디 입력 확인
                 {
                     return;
                 }
-                if(userID.equals("")){
+                if(userID.equals("")){ //아이디가 비어있을 경우
                     AlertDialog.Builder builder=new AlertDialog.Builder( RegistActivity.this );
                     dialog=builder.setMessage("아이디를 입력하세요.")
                             .setPositiveButton("확인",null)
@@ -69,7 +69,7 @@ public class RegistActivity extends AppCompatActivity {
                 Response.Listener<String> responseListener=new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
+                        try { //아이디가 사용가능할 경우
                             JSONObject jsonResponse=new JSONObject(response);
                             boolean success=jsonResponse.getBoolean("success");
                             if(success){
@@ -82,7 +82,7 @@ public class RegistActivity extends AppCompatActivity {
                                 overlap=true;
                                 btn_checkID.setText("확인완료");
                             }
-                            else{
+                            else{ //아이디가 중복일 경우
                                 AlertDialog.Builder builder=new AlertDialog.Builder( RegistActivity.this );
                                 dialog=builder.setMessage("현재 사용 중인 아이디입니다.")
                                         .setPositiveButton("확인",null)
