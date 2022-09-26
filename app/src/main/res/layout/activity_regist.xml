@@ -26,7 +26,7 @@
         android:layout_marginTop="24dp"
         android:ems="15"
         android:hint="Password"
-        android:inputType="textPersonName"
+        android:inputType="textPassword"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="@+id/et_idregist"
         app:layout_constraintHorizontal_bias="1.0"
