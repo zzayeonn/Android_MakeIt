@@ -5,10 +5,61 @@
     android:layout_height="match_parent"
     tools:context=".CameraFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Camera" />
+    <Button
+        android:id="@+id/btn_basic"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="120dp"
+        android:gravity="center"
+        android:background="@color/black"
+        android:text="기본 카메라"
+        android:textColor="@color/white"
+        android:textSize="17dp" />
+
+    <Button
+        android:id="@+id/btn_ar"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="200dp"
+        android:gravity="center"
+        android:background="@color/black"
+        android:text="애니멀 카메라"
+        android:textColor="@color/white"
+        android:textSize="17dp" />
+
+    <Button
+        android:id="@+id/btn_color"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="280dp"
+        android:gravity="center"
+        android:background="@color/black"
+        android:text="색감 카메라"
+        android:textColor="@color/white"
+        android:textSize="17dp" />
+
+        <ImageView
+            android:id="@+id/iv_picture"
+            android:layout_width="170dp"
+            android:layout_height="340dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="350dp"
+            tools:src="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="270dp"
+        android:layout_marginTop="495dp"
+        android:background="@color/black"
+        android:gravity="center"
+        android:text="저장"
+        android:textColor="@color/white"
+        android:textSize="17dp"
+        tools:ignore="TouchTargetSizeCheck" />
 
 </FrameLayout>

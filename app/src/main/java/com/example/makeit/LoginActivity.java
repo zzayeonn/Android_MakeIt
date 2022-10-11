@@ -300,11 +300,12 @@ public class LoginActivity extends AppCompatActivity {
                             //Toast.makeText(LoginActivity.this,"구글 로그인 성공",Toast.LENGTH_SHORT).show();
                             Log.d(TAG_G, "사용자 이름 : " + account.getDisplayName());
                             Log.d(TAG_G, "사용자 이메일 : " + account.getEmail());
-                            String userID = getRamdomPassword(12);
+                            String userID = getRamdomPassword(10);
                             String userPW = getRamdomPassword(12);
                             String userName = account.getDisplayName();
                             String userEmail = account.getEmail();
 
+                            //DB에 동일한 이메일 존재 여부 확인
                             Thread thread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -321,17 +322,13 @@ public class LoginActivity extends AppCompatActivity {
                                                                 @Override
                                                                 public void onResponse(String response) {
                                                                     try {
-                                                                        Log.d(TAG_G, "회원가입 진입");
                                                                         JSONObject jsonResponse = new JSONObject(response);
-                                                                        Log.d(TAG_G, "DB 접근");
                                                                         boolean success = jsonResponse.getBoolean("success");
-                                                                        Log.d(TAG_G, "DB 회원가입 허가");
                                                                         if (success) { //회원가입 가능
                                                                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                                                                             //intent.putExtra("사용자 이름 : ", account.getDisplayName());
                                                                             //intent.putExtra("사용자 이메일 : ", account.getEmail());
                                                                             startActivity(intent);
-                                                                            //finish();
                                                                         } else { //회원가입 불가능
                                                                             Log.d(TAG_G, "DB 업로드 실패");
                                                                             return;
@@ -352,12 +349,11 @@ public class LoginActivity extends AppCompatActivity {
                                                             System.out.println(e);
                                                         }
                                                     }
-                                                    else{ //이메일이 있을 경우
+                                                    else{ //이메일이 있을 경우 회원가입 절차 없이 로그인 진행
                                                         Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                                                         //intent.putExtra("사용자 이름 : ", account.getDisplayName());
                                                         //intent.putExtra("사용자 이메일 : ", account.getEmail());
                                                         startActivity(intent);
-                                                        finish();
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -425,12 +421,13 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG_K, "사용자 이름 : " + user.getId());
                 //Log.d(TAG_K, "사용자 이메일 : " + user.getKakaoAccount().getEmail());
                 //String userEmail = user.getKakaoAccount().getEmail();
-                String userID = getRamdomPassword(12);
+                String userID = getRamdomPassword(10);
                 String userPW = getRamdomPassword(12);
                 String userName = "kakao" + user.getId();
                 String userEmail = getRamdomPassword(16);
                 Log.d(TAG_K, "DB에 저장될 사용자 이름 : " + userName);
 
+                //DB에 동일한 이름 존재 여부 확인
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -457,7 +454,6 @@ public class LoginActivity extends AppCompatActivity {
                                                                 //intent.putExtra("사용자 이름 : ", account.getDisplayName());
                                                                 //intent.putExtra("사용자 이메일 : ", account.getEmail());
                                                                 startActivity(intent);
-                                                                //finish();
                                                             } else { //회원가입 불가능
                                                                 Log.d(TAG_G, "DB 업로드 실패");
                                                                 return;
@@ -478,12 +474,11 @@ public class LoginActivity extends AppCompatActivity {
                                                 System.out.println(e);
                                             }
                                         }
-                                        else{ //카카오 이름이 있을 경우
+                                        else{ //카카오 이름이 있을 경우 회원가입 절차 없이 로그인 진행
                                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                                             //intent.putExtra("사용자 이름 : ", user.getId());
                                             //intent.putExtra("사용자 이메일 : ", user.getKakaoAccount().getEmail());
                                             startActivity(intent);
-                                            finish();
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -519,11 +514,12 @@ public class LoginActivity extends AppCompatActivity {
                 //Log.d(TAG_N,"사용자 정보 업데이트 후 네이버 로그인 완료");
                 Log.d(TAG_N, "사용자 이름 : " + res.getProfile().getName());
                 Log.d(TAG_N, "사용자 이메일 : " + res.getProfile().getEmail());
-                String userID = getRamdomPassword(12);
+                String userID = getRamdomPassword(10);
                 String userPW = getRamdomPassword(12);
                 String userName = res.getProfile().getName();
                 String userEmail = res.getProfile().getEmail();
 
+                //DB에 동일한 이메일 존재 여부 확인
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -540,17 +536,13 @@ public class LoginActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onResponse(String response) {
                                                         try {
-                                                            Log.d(TAG_G, "회원가입 진입");
                                                             JSONObject jsonResponse = new JSONObject(response);
-                                                            Log.d(TAG_G, "DB 접근");
                                                             boolean success = jsonResponse.getBoolean("success");
-                                                            Log.d(TAG_G, "DB 회원가입 허가");
                                                             if (success) { //회원가입 가능
                                                                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                                                                 //intent.putExtra("사용자 이름 : ", account.getDisplayName());
                                                                 //intent.putExtra("사용자 이메일 : ", account.getEmail());
                                                                 startActivity(intent);
-                                                                //finish();
                                                             } else { //회원가입 불가능
                                                                 Log.d(TAG_G, "DB 업로드 실패");
                                                                 return;
@@ -571,12 +563,11 @@ public class LoginActivity extends AppCompatActivity {
                                                 System.out.println(e);
                                             }
                                         }
-                                        else{ //이메일이 있을 경우
+                                        else{ //이메일이 있을 경우 회원가입 절차 없이 로그인 진행
                                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                                             //intent.putExtra("사용자 이름 : ", account.getDisplayName());
                                             //intent.putExtra("사용자 이메일 : ", account.getEmail());
                                             startActivity(intent);
-                                            finish();
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
