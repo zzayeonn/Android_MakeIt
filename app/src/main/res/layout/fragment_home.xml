@@ -5,10 +5,42 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:id="@+id/iv_profile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="120dp"
+        android:src="@drawable/ic_action_add_photo_alternate" />
+
+    <Button
+        android:id="@+id/btn_profile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="120dp"
+        android:background="#00ff0000"
+        tools:ignore="SpeakableTextPresentCheck" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Home" />
+        android:id="@+id/tv_nickname"
+        android:layout_width="210dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="120dp"
+        android:layout_marginTop="130dp"
+        android:textSize="30dp"
+        android:hint="Your Nickname"
+        android:paddingTop="9dp" />
+
+    <ImageButton
+        android:id="@+id/btn_nickname"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="340dp"
+        android:layout_marginTop="140dp"
+        android:gravity="center"
+        android:src="@drawable/ic_border_color"
+        android:background="#00ff0000"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck,TouchTargetSizeCheck" />
 
 </FrameLayout>

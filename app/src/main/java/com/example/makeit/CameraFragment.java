@@ -167,10 +167,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
             FileOutputStream output = null;
 
             try {
-                output = new FileOutputStream(file);
+                output = new FileOutputStream(file); //파라미터로 보낸 파일을 쓰기 위한 스트림 생성
                 BitmapDrawable drawable = (BitmapDrawable) iv_picture.getDrawable();
                 Bitmap bitmap = drawable.getBitmap();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, output); //해상도에 맞추어 Compress
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, output); //compress 함수로 스트림에 비트맵을 저장
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } finally {
@@ -227,10 +227,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                             int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                                     ExifInterface.ORIENTATION_UNDEFINED);
 
-//                            //사진해상도가 너무 높으면 비트맵으로 로딩
-//                            BitmapFactory.Options options = new BitmapFactory.Options();
-//                            options.inSampleSize = 8; //8분의 1크기로 비트맵 객체 생성
-//                            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+                            //사진해상도가 너무 높으면 비트맵으로 로딩
+                            /*BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inSampleSize = 8; //8분의 1크기로 비트맵 객체 생성
+                            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);*/
 
                             Bitmap rotatedBitmap = null;
                             switch (orientation) {
