@@ -194,8 +194,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                             Toast.makeText(getApplicationContext(),"로그인하였습니다.",Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                            intent.putExtra("login", userID);
-                                            intent.putExtra("login", userPW);
+                                            intent.putExtra("userID", userID);
+                                            intent.putExtra("userPW", userPW);
                                             startActivity(intent);
                                         } else { //로그인 실패
                                             AlertDialog.Builder builder=new AlertDialog.Builder( LoginActivity.this );
@@ -213,6 +213,7 @@ public class LoginActivity extends AppCompatActivity {
                             LoginRequest loginRequest = new LoginRequest(userID, userPW, responseListener);
                             RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
                             queue.add(loginRequest);
+                            //Log.d("login", "로그인 완료");
                         }
                         catch (Exception e){
                             System.out.println(e);
@@ -310,24 +311,27 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     try {
+                                        //이메일 존재 여부 확인
                                         Response.Listener<String> responseListener=new Response.Listener<String>() {
                                             @Override
                                             public void onResponse(String response) {
-                                                try { //이메일이 없을 경우
+                                                try {
                                                     JSONObject jsonResponse=new JSONObject(response);
                                                     boolean success=jsonResponse.getBoolean("success");
-                                                    if(success){
+                                                    if(success){ //이메일이 없을 경우
                                                         try {
+                                                            //회원가입 가능 여부 확인
                                                             Response.Listener<String> responseListener = new Response.Listener<String>() {
                                                                 @Override
                                                                 public void onResponse(String response) {
                                                                     try {
+
                                                                         JSONObject jsonResponse = new JSONObject(response);
                                                                         boolean success = jsonResponse.getBoolean("success");
                                                                         if (success) { //회원가입 가능
                                                                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                                                            //intent.putExtra("사용자 이름 : ", account.getDisplayName());
-                                                                            //intent.putExtra("사용자 이메일 : ", account.getEmail());
+                                                                            intent.putExtra("userID", userID);
+                                                                            //intent.putExtra("userPW", userPW);
                                                                             startActivity(intent);
                                                                         } else { //회원가입 불가능
                                                                             Log.d(TAG_G, "DB 업로드 실패");
@@ -351,8 +355,8 @@ public class LoginActivity extends AppCompatActivity {
                                                     }
                                                     else{ //이메일이 있을 경우 회원가입 절차 없이 로그인 진행
                                                         Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                                        //intent.putExtra("사용자 이름 : ", account.getDisplayName());
-                                                        //intent.putExtra("사용자 이메일 : ", account.getEmail());
+                                                        intent.putExtra("userID", userID);
+                                                        //intent.putExtra("userEmail", userEmail);
                                                         startActivity(intent);
                                                     }
                                                 } catch (JSONException e) {
@@ -451,8 +455,8 @@ public class LoginActivity extends AppCompatActivity {
                                                             Log.d(TAG_G, "DB 회원가입 허가");
                                                             if (success) { //회원가입 가능
                                                                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                                                //intent.putExtra("사용자 이름 : ", account.getDisplayName());
-                                                                //intent.putExtra("사용자 이메일 : ", account.getEmail());
+                                                                intent.putExtra("userID", userID);
+                                                                //intent.putExtra("userEmail", userEmail);
                                                                 startActivity(intent);
                                                             } else { //회원가입 불가능
                                                                 Log.d(TAG_G, "DB 업로드 실패");
@@ -476,8 +480,8 @@ public class LoginActivity extends AppCompatActivity {
                                         }
                                         else{ //카카오 이름이 있을 경우 회원가입 절차 없이 로그인 진행
                                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                            //intent.putExtra("사용자 이름 : ", user.getId());
-                                            //intent.putExtra("사용자 이메일 : ", user.getKakaoAccount().getEmail());
+                                            intent.putExtra("userID", userID);
+                                            //intent.putExtra("userEmail", userEmail);
                                             startActivity(intent);
                                         }
                                     } catch (JSONException e) {
@@ -540,8 +544,8 @@ public class LoginActivity extends AppCompatActivity {
                                                             boolean success = jsonResponse.getBoolean("success");
                                                             if (success) { //회원가입 가능
                                                                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                                                //intent.putExtra("사용자 이름 : ", account.getDisplayName());
-                                                                //intent.putExtra("사용자 이메일 : ", account.getEmail());
+                                                                intent.putExtra("userID", userID);
+                                                                //intent.putExtra("userEmail", userEmail);
                                                                 startActivity(intent);
                                                             } else { //회원가입 불가능
                                                                 Log.d(TAG_G, "DB 업로드 실패");
@@ -565,8 +569,8 @@ public class LoginActivity extends AppCompatActivity {
                                         }
                                         else{ //이메일이 있을 경우 회원가입 절차 없이 로그인 진행
                                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                            //intent.putExtra("사용자 이름 : ", account.getDisplayName());
-                                            //intent.putExtra("사용자 이메일 : ", account.getEmail());
+                                            intent.putExtra("userID", userID);
+                                            //intent.putExtra("userEmail", userEmail);
                                             startActivity(intent);
                                         }
                                     } catch (JSONException e) {
@@ -602,6 +606,4 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     //--------------------------------------------------------------------------------------------------------------------------
-
-
 }

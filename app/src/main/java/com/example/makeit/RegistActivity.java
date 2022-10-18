@@ -30,6 +30,12 @@ public class RegistActivity extends AppCompatActivity {
     //--------------------------------------------------------------------------------------------------------------------------
 
     @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        dialog.dismiss();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
@@ -125,9 +131,9 @@ public class RegistActivity extends AppCompatActivity {
                                 public void onResponse(String response) {
                                     try {
                                         //Log.d("regist", "회원가입 진입");
-
                                         //String으로 그냥 못 보냄으로 JSON Object 형태로 변형하여 전송
                                         //서버 통신하여 회원가입 성공 여부를 jsonResponse로 받음
+                                        //Log.d("regist", response);
                                         JSONObject jsonResponse = new JSONObject(response);
                                         //Log.d("regist", "DB 접근");
                                         boolean success = jsonResponse.getBoolean("success");
@@ -150,6 +156,7 @@ public class RegistActivity extends AppCompatActivity {
                                             dialog=builder.setMessage("회원가입에 실패했습니다. 다시 시도해 주세요.")
                                                     .setPositiveButton("확인",null)
                                                     .create();
+
                                             dialog.show();
                                             return;
                                         }

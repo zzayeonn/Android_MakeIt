@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     Button btn_logout;
     AlertDialog dialog;
+    HomeFragment homefragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +35,25 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.nav_main);
         btn_logout = findViewById(R.id.btn_logout);
 
+        //아이디 정보 받기
+        Intent intent = getIntent();
+        String userID = intent.getStringExtra("userID");
+        Log.d("zn", userID);
+
+        homefragment = new HomeFragment();
+
         //처음화면
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_main, new HomeFragment()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_main, homefragment).commit();
         bottomNavigationView.setSelectedItemId(R.id.item_fragment3);
+
+        //번들객체 생성, userID값 저장
+        Bundle bundle = new Bundle();
+        bundle.putString("userID",userID);
+
+        //HomeFragment로 번들 전달
+        homefragment.setArguments(bundle);
+
+
 
         //바텀 네비게이션뷰 안의 아이템 설정
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
