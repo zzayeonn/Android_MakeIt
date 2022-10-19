@@ -78,9 +78,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         String userNickname = jsonObject.getString("userNickname");
                         Log.d("user", "userProfile");
                         Log.d("user", "userNickname");
-                        //StringToBitmap(userProfile);
+                        Bitmap bitmapProfile = StringToBitmap(userProfile);
                         Glide.with(getActivity().getApplicationContext())
-                                .load(userProfile)
+                                .asBitmap() //Glide가 bitmap을 읽을 수 있도록 도움
+                                .load(bitmapProfile)
                                 .override(500, 500)
                                 .into(iv_profile);
                         tv_nickname.setText(userNickname);
@@ -135,10 +136,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 uri = data.getData();
                 try{
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                        ImageDecoder.Source source = ImageDecoder.createSource(getActivity().getContentResolver(),uri);
-                        Bitmap bitmap = ImageDecoder.decodeBitmap(source);
+                        Bitmap bitmapProfile = ImageDecoder.decodeBitmap(ImageDecoder.createSource(getActivity().getContentResolver(),uri));
                         //bitmap = resize(bitmap);
-                        String userProfile = bitmapToByteArray(bitmap); //bitmapToByteArray 메소드에 비트맵 담음
+                        String userProfile = BitmapToString(bitmapProfile);
                         //Log.d("비트맵", String.valueOf(uri));
                         Response.Listener<String> responseListener = new Response.Listener<String>() { //이 메소드에서 이미지 인코딩에 썼던 데이터를 다 가져옴
 
@@ -166,46 +166,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    //비트맵을 바이트 배열로 바꾸어주는 메소드
-    public String bitmapToByteArray(Bitmap bitmap) {
-        String image = "";
-        ByteArrayOutputStream stream = new ByteArrayOutputStream() ;
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream) ;
-        byte[] byteArray = stream.toByteArray() ;
-        image = "&image=" + byteArrayToBinaryString(byteArray);
+    //String형을 BitMap으로 변환시켜주는 함수
+    public static String BitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 70, baos);
+        byte[] bytes = baos.toByteArray();
+        String image = Base64.encodeToString(bytes, Base64.DEFAULT);
         return image;
     }
 
-    //바이트 배열을 스트링으로 바꾸어주는 메소드
-    public static String byteArrayToBinaryString(byte[] b) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < b.length; ++i) {
-            sb.append(byteToBinaryString(b[i]));
-        }
-        return sb.toString();
-    }
-
-    //바이트를 스트링으로 바꾸어주는 메소드
-    public static String byteToBinaryString(byte n) {
-        StringBuilder sb = new StringBuilder("00000000");
-        for (int bit = 0; bit < 8; bit++) {
-            if (((n >> bit) & 1) > 0) {
-                sb.setCharAt(7 - bit, '1');
-            }
-        }
-        return sb.toString();
-    }
-
-    //바이트 배열을 비트맵으로 바꾸어주는 메소드
-    public Bitmap byteArrayToBitmap( byte[] $byteArray ) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray( $byteArray, 0, $byteArray.length ) ;
-        return bitmap;
-    }
-
     //이미지 String형을 Bitmap으로 변환시켜주는 함수
-    public static Bitmap StringToBitmap(String encodedString) {
+    public static Bitmap StringToBitmap(String image) {
         try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            byte[] encodeByte = Base64.decode(image, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
             return bitmap;
         } catch (Exception e) {
