@@ -36,13 +36,13 @@ import java.io.ByteArrayOutputStream;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
-    ImageView iv_profile;
-    Button btn_profile;
-    ImageButton btn_nickname;
-    TextView tv_nickname;
-    Dialog dialog_profile;
+    ImageView iv_profile, iv_now;
+    Button btn_profile, btn_now;
+    ImageButton btn_nickname, btn_plus;
+    TextView tv_nickname, tv_title_now, tv_today_now_me, tv_weather_now_me, tv_mood_now_me, tv_diary_now_me;
+    Dialog dialog_profile, dialog_diary;
 
-    String userNickname, userID;
+    String userNickname, userID, userTitle, userToday, userWeather, userMood, userDiary;
     private static final String URL_UPLOAD = "http://192.168.75.235/profile_makeit.php";
     private final static String TAG_P = "프로필사진";
     Uri uri; //Uniform resource identifier
@@ -56,9 +56,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         btn_nickname = viewGroup.findViewById(R.id.btn_nickname);
         tv_nickname = viewGroup.findViewById(R.id.tv_nickname);
 
+        iv_now = viewGroup.findViewById(R.id.iv_now);
+        btn_plus = viewGroup.findViewById(R.id.btn_plus);
+        btn_now = viewGroup.findViewById(R.id.btn_now);
+        tv_title_now = viewGroup.findViewById(R.id.tv_title_now);
+        tv_today_now_me = viewGroup.findViewById(R.id.tv_today_now_me);
+        tv_weather_now_me = viewGroup.findViewById(R.id.tv_weather_now_me);
+        tv_mood_now_me = viewGroup.findViewById(R.id.tv_mood_now_me);
+        tv_diary_now_me = viewGroup.findViewById(R.id.tv_diary_now_me);
+
+
         dialog_profile = new Dialog(getActivity());
         dialog_profile.requestWindowFeature(Window.FEATURE_NO_TITLE); //다이얼로그 타이틀 제거
         dialog_profile.setContentView(R.layout.activity_dialog);
+
+        dialog_diary = new Dialog(getActivity());
+        dialog_diary.requestWindowFeature(Window.FEATURE_NO_TITLE); //다이얼로그 타이틀 제거
+        dialog_diary.setContentView(R.layout.activity_dialog_diary);
 
         //MainActivity에서 전달한 번들 저장
         Bundle bundle = getArguments();
@@ -118,6 +132,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showDialog_change();
             }
         });
+
+        btn_plus.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                showDialog_plus();
+            }
+        });
+
         return viewGroup;
     }
 
@@ -245,6 +267,72 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "취소되었습니다.", Toast.LENGTH_SHORT).show();
                 dialog_profile.dismiss();
+            }
+        });
+    }
+
+    public void showDialog_plus(){
+        EditText et_title = dialog_diary.findViewById(R.id.et_title);
+        EditText et_today = dialog_diary.findViewById(R.id.et_today);
+        EditText et_weather = dialog_diary.findViewById(R.id.et_weather);
+        EditText et_mood= dialog_diary.findViewById(R.id.et_mood);
+        EditText et_diary = dialog_diary.findViewById(R.id.et_diary);
+
+        dialog_diary.show();
+
+        Button btn_yes = dialog_diary.findViewById(R.id.btn_yes);
+        Button btn_no = dialog_diary.findViewById(R.id.btn_no);
+        btn_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userTitle = et_title.getText().toString();
+                userToday = et_today.getText().toString();
+                userWeather = et_weather.getText().toString();
+                userMood = et_mood.getText().toString();
+                userDiary = et_diary.getText().toString();
+
+                Log.d("diary", userTitle);
+                Log.d("diary", userToday);
+                Log.d("diary", userWeather);
+                Log.d("diary", userMood);
+                Log.d("diary", userDiary);
+
+                dialog_profile.dismiss();
+
+                tv_title_now.setText(userTitle);
+                tv_today_now_me.setText(userToday);
+                tv_weather_now_me.setText(userWeather);
+                tv_mood_now_me.setText(userMood);
+                tv_diary_now_me.setText(userDiary);
+
+                Toast.makeText(getActivity(), "등록되었습니다.", Toast.LENGTH_SHORT).show();
+
+                Response.Listener<String> responseListener = new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            boolean success = jsonObject.getBoolean("success");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                DiaryRequest diaryRequest = new DiaryRequest(userID, userTitle, userToday, userWeather, userMood, userDiary, responseListener);
+                RequestQueue queue = Volley.newRequestQueue(getContext());
+                queue.add(diaryRequest);
+            }
+        });
+
+        btn_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(), "취소되었습니다.", Toast.LENGTH_SHORT).show();
+                dialog_diary.dismiss();
             }
         });
     }
