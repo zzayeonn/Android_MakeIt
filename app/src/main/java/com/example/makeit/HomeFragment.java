@@ -42,20 +42,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView tv_nickname, tv_title_now, tv_today_now_me, tv_weather_now_me, tv_mood_now_me, tv_diary_now_me;
     Dialog dialog_profile, dialog_diary;
 
-    String userNickname, userID, userTitle, userToday, userWeather, userMood, userDiary;
-    private static final String URL_UPLOAD = "http://192.168.75.235/profile_makeit.php";
-    private final static String TAG_P = "프로필사진";
+    String userID, userNickname, userTitle, userToday, userWeather, userMood, userDiaryMemo;
     Uri uri; //Uniform resource identifier
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
 
+        //프로필-----------------------------------------------------------------------------------------------------------------
         iv_profile = viewGroup.findViewById(R.id.iv_profile);
         btn_profile = viewGroup.findViewById(R.id.btn_profile);
         btn_nickname = viewGroup.findViewById(R.id.btn_nickname);
         tv_nickname = viewGroup.findViewById(R.id.tv_nickname);
 
+        dialog_profile = new Dialog(getActivity());
+        dialog_profile.requestWindowFeature(Window.FEATURE_NO_TITLE); //다이얼로그 타이틀 제거
+        dialog_profile.setContentView(R.layout.activity_dialog);
+        //----------------------------------------------------------------------------------------------------------------------
+
+        //다이어리----------------------------------------------------------------------------------------------------------------
         iv_now = viewGroup.findViewById(R.id.iv_now);
         btn_plus = viewGroup.findViewById(R.id.btn_plus);
         btn_now = viewGroup.findViewById(R.id.btn_now);
@@ -65,22 +70,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tv_mood_now_me = viewGroup.findViewById(R.id.tv_mood_now_me);
         tv_diary_now_me = viewGroup.findViewById(R.id.tv_diary_now_me);
 
-
-        dialog_profile = new Dialog(getActivity());
-        dialog_profile.requestWindowFeature(Window.FEATURE_NO_TITLE); //다이얼로그 타이틀 제거
-        dialog_profile.setContentView(R.layout.activity_dialog);
-
         dialog_diary = new Dialog(getActivity());
         dialog_diary.requestWindowFeature(Window.FEATURE_NO_TITLE); //다이얼로그 타이틀 제거
         dialog_diary.setContentView(R.layout.activity_dialog_diary);
+        //----------------------------------------------------------------------------------------------------------------------
 
+        //userID 인텐트----------------------------------------------------------------------------------------------------------
         //MainActivity에서 전달한 번들 저장
         Bundle bundle = getArguments();
 
         //번들 안의 텍스트 불러오기
         userID = bundle.getString("userID");
         Log.d("user", userID);
+        //----------------------------------------------------------------------------------------------------------------------
 
+        //DB에 저장되어있던 Nicknamer과 Profile 불러오기
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -114,14 +118,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(homeRequest);
 
-        btn_profile.setOnClickListener(new View.OnClickListener(){ //갤러리 실행
+        //프로필 사진-------------------------------------------------------------------------------------------------------------
+        btn_profile.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 String test_string = intent.toUri(Intent.URI_INTENT_SCHEME);
-                Log.d(TAG_P, test_string); //인텐트 정보
+                Log.d("Home", test_string); //인텐트 정보
                 startActivityForResult(intent, 0);
             }
         });
@@ -139,31 +144,45 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showDialog_plus();
             }
         });
+        //----------------------------------------------------------------------------------------------------------------------
 
+        //다이어리 사진-----------------------------------------------------------------------------------------------------------
+        btn_now.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                String test_string = intent.toUri(Intent.URI_INTENT_SCHEME);
+                Log.d("Home", test_string); //인텐트 정보
+                startActivityForResult(intent, 1);
+            }
+        });
+        //----------------------------------------------------------------------------------------------------------------------
         return viewGroup;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 0) {
-            if(resultCode == -1) {
+        if(resultCode == -1) {
+            //프로필 사진---------------------------------------------------------------------------------------------------------
+            if (requestCode == 0) {
                 Glide.with(getActivity().getApplicationContext())
                         .load(data.getData())
                         .override(500, 500)
                         .into(iv_profile);
-                Log.d(TAG_P, data.getData().toString()); //이미지 경로
+                Log.d("Home", data.getData().toString()); //이미지 경로
                 //String userProfile = data.getData().toString();
                 //uploadPicture(userID, userProfile);
                 uri = data.getData();
-                try{
+                try {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                        Bitmap bitmapProfile = ImageDecoder.decodeBitmap(ImageDecoder.createSource(getActivity().getContentResolver(),uri));
-                        //bitmap = resize(bitmap);
+                        Bitmap bitmapProfile = ImageDecoder.decodeBitmap(ImageDecoder.createSource(getActivity().getContentResolver(), uri));
+                        bitmapProfile = resize(bitmapProfile);
                         String userProfile = BitmapToString(bitmapProfile);
                         //Log.d("비트맵", String.valueOf(uri));
                         Response.Listener<String> responseListener = new Response.Listener<String>() { //이 메소드에서 이미지 인코딩에 썼던 데이터를 다 가져옴
-
                             @Override
                             public void onResponse(String response) {
                                 try {
@@ -177,17 +196,56 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 }
                             }
                         };
-                        ProfileRequest profileRequest = new ProfileRequest(userID, userProfile, responseListener);
-                        RequestQueue queue = Volley.newRequestQueue(getContext());
-                        queue.add(profileRequest);
+                            ProfileRequest profileRequest = new ProfileRequest(userID, userProfile, responseListener);
+                            RequestQueue queue = Volley.newRequestQueue(getContext());
+                            queue.add(profileRequest);
                     }
-                }catch (Exception e){
-                    Log.d("이미지 인코딩 오류",e.toString());
+                } catch (Exception e) {
+                    Log.d("이미지 인코딩 오류", e.toString());
                 }
             }
+            //------------------------------------------------------------------------------------------------------------------
+
+            //다이어리 사진-------------------------------------------------------------------------------------------------------
+            else if(requestCode == 1){
+                Glide.with(getActivity().getApplicationContext())
+                        .load(data.getData())
+                        .override(500, 500)
+                        .into(iv_now);
+                Log.d("Home", data.getData().toString()); //이미지 경로
+                uri = data.getData();
+                try {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                        Bitmap bitmapDiary = ImageDecoder.decodeBitmap(ImageDecoder.createSource(getActivity().getContentResolver(), uri));
+                        bitmapDiary = resize(bitmapDiary);
+                        String userDiaryPic = BitmapToString(bitmapDiary);
+                        Response.Listener<String> responseListener = new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    boolean success = jsonObject.getBoolean("success");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    return;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+                        DiaryPicRequest diaryPicRequest = new DiaryPicRequest(userID, userDiaryPic, responseListener);
+                        RequestQueue queue = Volley.newRequestQueue(getContext());
+                        queue.add(diaryPicRequest);
+                    }
+                } catch (Exception e) {
+                    Log.d("이미지 인코딩 오류", e.toString());
+                }
+            }
+            //------------------------------------------------------------------------------------------------------------------
         }
     }
 
+    //이미지 변환 함수-------------------------------------------------------------------------------------------------------------
     //String형을 BitMap으로 변환시켜주는 함수
     public static String BitmapToString(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -224,7 +282,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             bm = Bitmap.createScaledBitmap(bm, 160, 96, true);
         return bm;
     }
+    //--------------------------------------------------------------------------------------------------------------------------
 
+    //닉네임 함수-----------------------------------------------------------------------------------------------------------------
     public void showDialog_change(){
         EditText et_nickname_enter = dialog_profile.findViewById(R.id.et_nickname_enter);
 
@@ -270,7 +330,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
+    //--------------------------------------------------------------------------------------------------------------------------
 
+    //다이어리 내용 함수-----------------------------------------------------------------------------------------------------------
     public void showDialog_plus(){
         EditText et_title = dialog_diary.findViewById(R.id.et_title);
         EditText et_today = dialog_diary.findViewById(R.id.et_today);
@@ -289,23 +351,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 userToday = et_today.getText().toString();
                 userWeather = et_weather.getText().toString();
                 userMood = et_mood.getText().toString();
-                userDiary = et_diary.getText().toString();
+                userDiaryMemo = et_diary.getText().toString();
 
                 Log.d("diary", userTitle);
                 Log.d("diary", userToday);
                 Log.d("diary", userWeather);
                 Log.d("diary", userMood);
-                Log.d("diary", userDiary);
-
-                dialog_profile.dismiss();
+                Log.d("diary", userDiaryMemo);
 
                 tv_title_now.setText(userTitle);
                 tv_today_now_me.setText(userToday);
                 tv_weather_now_me.setText(userWeather);
                 tv_mood_now_me.setText(userMood);
-                tv_diary_now_me.setText(userDiary);
+                tv_diary_now_me.setText(userDiaryMemo);
 
                 Toast.makeText(getActivity(), "등록되었습니다.", Toast.LENGTH_SHORT).show();
+
+                dialog_profile.dismiss();
 
                 Response.Listener<String> responseListener = new Response.Listener<String>() {
 
@@ -322,7 +384,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 };
-                DiaryRequest diaryRequest = new DiaryRequest(userID, userTitle, userToday, userWeather, userMood, userDiary, responseListener);
+                DiaryRequest diaryRequest = new DiaryRequest(userID, userTitle, userToday, userWeather, userMood, userDiaryMemo, responseListener);
                 RequestQueue queue = Volley.newRequestQueue(getContext());
                 queue.add(diaryRequest);
             }
@@ -336,6 +398,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
+    //--------------------------------------------------------------------------------------------------------------------------
 
     @Override
     public void onClick(View view) {

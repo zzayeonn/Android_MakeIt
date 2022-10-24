@@ -12,16 +12,16 @@ public class DiaryRequest extends StringRequest {
     final static private String URL = "http://192.168.75.235/diary_makeit.php"; //"http://퍼블릭 DNS 주소/register_makeit.php"
     private Map<String, String> parameters;
 
-    public DiaryRequest(String userID, String userTitle, String userToday, String userWeather, String userMood, String userDiary, Response.Listener<String> listener) {
+    public DiaryRequest(String userID, String userTitle, String userToday, String userWeather, String userMood, String userDiaryMemo, Response.Listener<String> listener) {
         super(Method.POST, URL, listener, null);
 
         parameters = new HashMap<>();
         parameters.put("userID", userID);
-        parameters.put("userPW", userTitle);
-        parameters.put("userName", userToday);
-        parameters.put("userEmail", userWeather);
-        parameters.put("userEmail", userMood);
-        parameters.put("userEmail", userDiary);
+        parameters.put("userTitle", userTitle);
+        parameters.put("userToday", userToday);
+        parameters.put("userWeather", userWeather);
+        parameters.put("userMood", userMood);
+        parameters.put("userDiaryMemo", userDiaryMemo);
     }
 
     @Override

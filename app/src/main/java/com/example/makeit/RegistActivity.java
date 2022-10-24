@@ -133,11 +133,11 @@ public class RegistActivity extends AppCompatActivity {
                                         //Log.d("regist", "회원가입 진입");
                                         //String으로 그냥 못 보냄으로 JSON Object 형태로 변형하여 전송
                                         //서버 통신하여 회원가입 성공 여부를 jsonResponse로 받음
-                                        //Log.d("regist", response);
+                                        Log.d("regist", response);
                                         JSONObject jsonResponse = new JSONObject(response);
-                                        //Log.d("regist", "DB 접근");
+                                        Log.d("regist", "DB 접근");
                                         boolean success = jsonResponse.getBoolean("success");
-                                        //Log.d("regist", "DB 회원가입 허가");
+                                        Log.d("regist", "DB 회원가입 허가");
                                         if (success) { //회원가입 가능
                                             AlertDialog.Builder builder=new AlertDialog.Builder( RegistActivity.this );
                                             dialog=builder.setMessage("축하합니다. 회원가입이 완료되었습니다.")
